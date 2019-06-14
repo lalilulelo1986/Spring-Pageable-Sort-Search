@@ -20,6 +20,7 @@ class PersonService(
             val specification = SearchCriteria.build(it).map {
                 Specification.where(PersonSpecification(SearchCriteria(it.group(1), it.group(2), it.group(3))))
             }.reduce { t: Specification<PersonEntity>, u: Specification<PersonEntity> -> t.and(u) }
+
             return personRepository.findAll(specification, pageable).content
         }
         return personRepository.findAll(pageable).content
