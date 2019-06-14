@@ -10,18 +10,19 @@ import javax.persistence.criteria.Root
 class PersonSpecification(private val criteria: SearchCriteria) : Specification<PersonEntity> {
 
     override fun toPredicate(root: Root<PersonEntity>, query: CriteriaQuery<*>, builder: CriteriaBuilder): Predicate? {
+
+        val matchList = criteria.value.takeIf { criteria.operation == ":" }.toString().split("'")
         return when (criteria.operation) {
+            ":" ->
+                if (matchList.size > 1) {
+                    root.get<String>(criteria.key).`in`(matchList)
+                } else {
+                    builder.like(root.get<String>(criteria.key), "%" + criteria.value + "%")
+                }
             ">" -> builder.greaterThanOrEqualTo(
                     root.get<String>(criteria.key), criteria.value.toString())
             "<" -> builder.lessThanOrEqualTo(
                     root.get<String>(criteria.key), criteria.value.toString())
-            ":" ->
-                if (root.get<String>(criteria.key).javaType === String::class.java) {
-                    builder.like(
-                            root.get<String>(criteria.key), "%" + criteria.value + "%")
-                } else {
-                    builder.equal(root.get<String>(criteria.key), criteria.value)
-                }
             else -> null
         }
     }

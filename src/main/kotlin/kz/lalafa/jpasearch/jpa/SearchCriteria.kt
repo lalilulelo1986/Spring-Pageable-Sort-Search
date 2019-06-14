@@ -12,7 +12,7 @@ data class SearchCriteria (
 ) {
     companion object {
         fun build(search: String): List<MatchResult> {
-            val pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),")
+            val pattern = Pattern.compile("(\\w+?)(:|<|>)([\\w']+?),")
             val matcher = pattern.matcher("$search,")
             return  matcher.results().toList()
         }

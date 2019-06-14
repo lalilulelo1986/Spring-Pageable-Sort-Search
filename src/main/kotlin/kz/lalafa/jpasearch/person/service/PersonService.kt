@@ -15,7 +15,8 @@ class PersonService(
 ) {
 
     fun get(search: String?, pageable: Pageable): List<PersonEntity> {
-        search?.let {
+
+        search?.takeIf { it.isNotBlank() }?.let {
             val specification = SearchCriteria.build(it).map {
                 Specification.where(PersonSpecification(SearchCriteria(it.group(1), it.group(2), it.group(3))))
             }.reduce { t: Specification<PersonEntity>, u: Specification<PersonEntity> -> t.and(u) }
